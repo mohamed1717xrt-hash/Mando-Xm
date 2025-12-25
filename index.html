@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="mainHtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقعي التفاعلي</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: sans-serif; 
+            background-color: #f0f2f5; 
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+        
+        /* قسم اللغات */
+        .lang-bar { width: 100%; padding: 10px; background: #fff; text-align: left; border-bottom: 1px solid #ddd; }
+        
+        /* الحاويات */
+        .container { width: 90%; max-width: 400px; margin-top: 50px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
+        button { background: #1877f2; color: white; border: none; font-weight: bold; cursor: pointer; }
+        
+        /* إخفاء الأقسام */
+        .hidden { display: none; }
+        
+        .upload-area { border: 2px dashed #ccc; padding: 20px; margin-top: 10px; border-radius: 8px; }
+        .preview-img { width: 100%; margin-top: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="lang-bar">
+        <select id="langSelect" onchange="changeLang()">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <div id="loginSection" class="card">
+            <h2 id="loginTitle">تسجيل الدخول</h2>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <button id="loginBtn" onclick="login()">دخول</button>
+        </div>
+
+        <div id="mainSection" class="card hidden">
+            <h2 id="welcomeMsg">مرحباً بك!</h2>
+            <div class="upload-area">
+                <p id="uploadText">اختر صورة أو فيديو لنشره</p>
+                <input type="file" id="fileInput" accept="image/*,video/*" onchange="previewFile()">
+                <img id="preview" class="preview-img">
+            </div>
+            <input type="text" id="postDesc" placeholder="اكتب وصفاً...">
+            <button id="publishBtn" style="background:#42b72a;" onclick="publish()">نشر الآن</button>
+        </div>
+    </div>
+
+    <script>
+        let lang = 'ar';
+
+        function changeLang() {
+            lang = document.getElementById('langSelect').value;
+            const isEn = lang === 'en';
+            
+            document.getElementById('mainHtml').dir = isEn ? "ltr" : "rtl";
+            document.getElementById('loginTitle').innerText = isEn ? "Login" : "تسجيل الدخول";
+            document.getElementById('username').placeholder = isEn ? "Username" : "اسم المستخدم";
+            document.getElementById('loginBtn').innerText = isEn ? "Login" : "دخول";
+            document.getElementById('uploadText').innerText = isEn ? "Choose photo or video" : "اختر صورة أو فيديو لنشره";
+            document.getElementById('postDesc').placeholder = isEn ? "Write a description..." : "اكتب وصفاً...";
+            document.getElementById('publishBtn').innerText = isEn ? "Publish Now" : "نشر الآن";
+        }
+
+        function login() {
+            const user = document.getElementById('username').value;
+            if (user.length > 2) {
+                // إخفاء قسم الدخول وإظهار قسم النشر
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainSection').classList.remove('hidden');
+                document.getElementById('welcomeMsg').innerText = (lang === 'ar' ? "مرحباً " : "Welcome ") + user;
+            } else {
+                alert(lang === 'ar' ? "يرجى إدخال اسمك" : "Please enter your name");
+            }
+        }
+
+        function previewFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const preview = document.getElementById('preview');
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.src = reader.result;
+                preview.style.display = "block";
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function publish() {
+            alert(lang === 'ar' ? "تم النشر بنجاح! (سيتم الربط بالقاعدة قريباً)" : "Published successfully!");
+        }
+    </script>
+</body>
+</html>
