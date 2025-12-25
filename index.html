@@ -3,105 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقعي التفاعلي</title>
+    <title>Mando X</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: sans-serif; 
-            background-color: #f0f2f5; 
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        :root { 
+            --bg: #000000; --card: #121212; --text: #ffffff; 
+            --border: #333333; --primary: #065fd4; --google: #ffffff; --fb: #1877f2;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+
+        /* Header */
+        .header { position: sticky; top: 0; background: var(--bg); display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--border); z-index: 1000; }
+        .logo { font-weight: bold; font-size: 22px; color: var(--primary); }
+
+        /* Login Page */
+        #loginPage { padding: 40px 25px; text-align: center; max-width: 400px; margin: 0 auto; }
+        .avatar-box { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--primary); margin: 20px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--card); font-size: 30px; overflow: hidden; }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* قسم اللغات */
-        .lang-bar { width: 100%; padding: 10px; background: #fff; text-align: left; border-bottom: 1px solid #ddd; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); outline: none; }
         
-        /* الحاويات */
-        .container { width: 90%; max-width: 400px; margin-top: 50px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        .main-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
-        button { background: #1877f2; color: white; border: none; font-weight: bold; cursor: pointer; }
+        /* Social Buttons */
+        .divider { margin: 25px 0; display: flex; align-items: center; color: #666; font-size: 13px; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
         
-        /* إخفاء الأقسام */
+        .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; cursor: pointer; background: transparent; color: white; }
+        .google-btn { background: #fff; color: #000; }
+        .fb-btn { background: var(--fb); border: none; }
+
+        .recovery-link { display: block; margin-top: 20px; color: var(--primary); text-decoration: none; font-size: 14px; }
+
+        /* Feed & Post */
         .hidden { display: none; }
-        
-        .upload-area { border: 2px dashed #ccc; padding: 20px; margin-top: 10px; border-radius: 8px; }
-        .preview-img { width: 100%; margin-top: 10px; border-radius: 8px; display: none; }
+        .post { border-bottom: 6px solid var(--card); background: var(--bg); }
+        .post img { width: 100%; max-height: 450px; object-fit: cover; }
+        .post-info { padding: 15px; display: flex; gap: 12px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #555; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--bg); border-top: 1px solid var(--border); display: flex; justify-content: center; height: 60px; align-items: center; z-index: 1000; }
+        .create-btn { width: 45px; height: 45px; border-radius: 50%; background: white; color: black; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+
+        /* Modal */
+        #modal { position: fixed; bottom: 0; width: 100%; background: var(--card); border-radius: 20px 20px 0 0; padding: 25px; z-index: 3000; transform: translateY(100%); }
+        #modal.active { transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <div class="lang-bar">
-        <select id="langSelect" onchange="changeLang()">
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-        </select>
+    <div class="header">
+        <div class="logo">Mando X</div>
     </div>
 
-    <div class="container">
-        <div id="loginSection" class="card">
-            <h2 id="loginTitle">تسجيل الدخول</h2>
-            <input type="text" id="username" placeholder="اسم المستخدم">
-            <button id="loginBtn" onclick="login()">دخول</button>
+    <div id="loginPage">
+        <h2 id="logTitle">تسجيل الدخول</h2>
+        <div class="avatar-box" onclick="document.getElementById('avatarInp').click()">
+            <span id="pIcon">+</span>
+            <img id="avatarImg" class="hidden">
         </div>
+        <input type="file" id="avatarInp" class="hidden" accept="image/*" onchange="previewAvatar()">
+        <input type="text" id="user" placeholder="اسم المستخدم أو البريد">
+        <input type="password" placeholder="كلمة المرور">
+        
+        <button class="main-btn" onclick="startApp()">تسجيل الدخول</button>
+        
+        <a href="#" class="recovery-link" onclick="alert('سيتم إرسال رمز الاسترداد إلى بريدك المسجل')">نسيت كلمة المرور؟ استرداد الحساب</a>
 
-        <div id="mainSection" class="card hidden">
-            <h2 id="welcomeMsg">مرحباً بك!</h2>
-            <div class="upload-area">
-                <p id="uploadText">اختر صورة أو فيديو لنشره</p>
-                <input type="file" id="fileInput" accept="image/*,video/*" onchange="previewFile()">
-                <img id="preview" class="preview-img">
-            </div>
-            <input type="text" id="postDesc" placeholder="اكتب وصفاً...">
-            <button id="publishBtn" style="background:#42b72a;" onclick="publish()">نشر الآن</button>
-        </div>
+        <div class="divider">أو المتابعة باستخدام</div>
+
+        <button class="social-btn google-btn" onclick="socialLogin('Google')">
+             G المتابعة باستخدام Google
+        </button>
+        <button class="social-btn fb-btn" onclick="socialLogin('Facebook')">
+             f المتابعة باستخدام Facebook
+        </button>
+    </div>
+
+    <div id="feedPage" class="hidden">
+        <div id="postsList"></div>
+    </div>
+
+    <div class="bottom-nav hidden" id="nav">
+        <div class="create-btn" onclick="openModal()">+</div>
+    </div>
+
+    <div id="modal">
+        <h3>منشور جديد</h3>
+        <input type="file" id="postFile" class="hidden" accept="image/*" onchange="postPreview()">
+        <button onclick="document.getElementById('postFile').click()" class="main-btn" style="background:#333">+ اختر صورة</button>
+        <img id="pImg" style="width:100%; margin:10px 0; display:none; border-radius:10px;">
+        <input type="text" id="postDesc" placeholder="ماذا يدور في ذهنك؟">
+        <button class="main-btn" onclick="publish()">نشر الآن</button>
+        <button onclick="closeModal()" class="social-btn" style="margin-top:10px; border:none;">إلغاء</button>
     </div>
 
     <script>
-        let lang = 'ar';
+        let me = { name: '', avatar: '' };
 
-        function changeLang() {
-            lang = document.getElementById('langSelect').value;
-            const isEn = lang === 'en';
-            
-            document.getElementById('mainHtml').dir = isEn ? "ltr" : "rtl";
-            document.getElementById('loginTitle').innerText = isEn ? "Login" : "تسجيل الدخول";
-            document.getElementById('username').placeholder = isEn ? "Username" : "اسم المستخدم";
-            document.getElementById('loginBtn').innerText = isEn ? "Login" : "دخول";
-            document.getElementById('uploadText').innerText = isEn ? "Choose photo or video" : "اختر صورة أو فيديو لنشره";
-            document.getElementById('postDesc').placeholder = isEn ? "Write a description..." : "اكتب وصفاً...";
-            document.getElementById('publishBtn').innerText = isEn ? "Publish Now" : "نشر الآن";
-        }
-
-        function login() {
-            const user = document.getElementById('username').value;
-            if (user.length > 2) {
-                // إخفاء قسم الدخول وإظهار قسم النشر
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainSection').classList.remove('hidden');
-                document.getElementById('welcomeMsg').innerText = (lang === 'ar' ? "مرحباً " : "Welcome ") + user;
-            } else {
-                alert(lang === 'ar' ? "يرجى إدخال اسمك" : "Please enter your name");
-            }
-        }
-
-        function previewFile() {
-            const file = document.getElementById('fileInput').files[0];
-            const preview = document.getElementById('preview');
+        function previewAvatar() {
+            const file = document.getElementById('avatarInp').files[0];
             const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('avatarImg').src = e.target.result;
+                document.getElementById('avatarImg').classList.remove('hidden');
+                document.getElementById('pIcon').classList.add('hidden');
+                me.avatar = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
 
-            reader.onloadend = function () {
-                preview.src = reader.result;
-                preview.style.display = "block";
-            }
+        function startApp() {
+            const name = document.getElementById('user').value;
+            if(name.length < 2) return alert("يرجى إدخال اسم المستخدم");
+            me.name = name;
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('feedPage').classList.remove('hidden');
+            document.getElementById('nav').classList.remove('hidden');
+        }
 
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+        function socialLogin(platform) {
+            alert("جارٍ الاتصال بـ " + platform + "... (هذه ميزة تجريبية في واجهة Mando X)");
+            document.getElementById('user').value = "User_" + platform;
+            startApp();
+        }
+
+        function openModal() { document.getElementById('modal').classList.add('active'); }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+        function postPreview() {
+            const file = document.getElementById('postFile').files[0];
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('pImg').src = e.target.result;
+                document.getElementById('pImg').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         }
 
         function publish() {
-            alert(lang === 'ar' ? "تم النشر بنجاح! (سيتم الربط بالقاعدة قريباً)" : "Published successfully!");
+            const desc = document.getElementById('postDesc').value;
+            const img = document.getElementById('pImg').src;
+            if(!img || !desc) return alert("أكمل بيانات المنشور");
+
+            const avatarHTML = me.avatar ? `<img src="${me.avatar}">` : `<div style="width:100%;height:100%;background:#555;display:flex;align-items:center;justify-content:center;">${me.name[0].toUpperCase()}</div>`;
+            
+            const postHTML = `<div class="post">
+                <img src="${img}">
+                <div class="post-info">
+                    <div class="profile-pic">${avatarHTML}</div>
+                    <div><b>${me.name}</b><p>${desc}</p></div>
+                </div>
+            </div>`;
+            document.getElementById('postsList').innerHTML = postHTML + document.getElementById('postsList').innerHTML;
+            closeModal();
+            document.getElementById('pImg').style.display = 'none';
+            document.getElementById('postDesc').value = '';
         }
     </script>
 </body>
