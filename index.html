@@ -3,165 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mando X</title>
+    <title>Mando X - Professional Edition</title>
     <style>
-        :root { 
-            --bg: #000000; --card: #121212; --text: #ffffff; 
-            --border: #333333; --primary: #065fd4; --google: #ffffff; --fb: #1877f2;
-        }
+        :root { --bg: #000; --card: #121212; --text: #fff; --border: #333; --primary: #2ecc71; --gold: #f1c40f; --red: #e74c3c; }
+        .light-mode { --bg: #f0f2f5; --card: #fff; --text: #000; --border: #ddd; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
 
-        /* Header */
-        .header { position: sticky; top: 0; background: var(--bg); display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--border); z-index: 1000; }
-        .logo { font-weight: bold; font-size: 22px; color: var(--primary); }
+        /* تسجيل الدخول */
+        #authPage { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: var(--card); padding: 35px; border-radius: 25px; border: 2px solid var(--primary); width: 100%; max-width: 400px; text-align: center; }
+        .auth-card input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: #000; color: #fff; outline: none; }
 
-        /* Login Page */
-        #loginPage { padding: 40px 25px; text-align: center; max-width: 400px; margin: 0 auto; }
-        .avatar-box { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--primary); margin: 20px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--card); font-size: 30px; overflow: hidden; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); outline: none; }
-        
-        .main-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Social Buttons */
-        .divider { margin: 25px 0; display: flex; align-items: center; color: #666; font-size: 13px; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
-        
-        .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; cursor: pointer; background: transparent; color: white; }
-        .google-btn { background: #fff; color: #000; }
-        .fb-btn { background: var(--fb); border: none; }
+        /* القائمة الجانبية */
+        .side-menu { position: fixed; top: 0; right: -100%; width: 300px; height: 100%; background: var(--card); z-index: 5000; padding: 25px; transition: 0.4s; border-left: 1px solid var(--border); box-shadow: -10px 0 30px #000; }
+        .side-menu.active { right: 0; }
+        .side-menu.ltr { right: auto; left: -100%; }
+        .side-menu.ltr.active { left: 0; }
 
-        .recovery-link { display: block; margin-top: 20px; color: var(--primary); text-decoration: none; font-size: 14px; }
+        /* الهيدر والأقسام */
+        .header { position: sticky; top: 0; background: var(--bg); padding: 12px; border-bottom: 1px solid var(--border); z-index: 1000; }
+        .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .tab { padding: 8px 18px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); cursor: pointer; white-space: nowrap; color: #888; font-size: 13px; }
+        .tab.active { background: var(--primary); color: #000; font-weight: bold; }
 
-        /* Feed & Post */
-        .hidden { display: none; }
-        .post { border-bottom: 6px solid var(--card); background: var(--bg); }
-        .post img { width: 100%; max-height: 450px; object-fit: cover; }
-        .post-info { padding: 15px; display: flex; gap: 12px; }
-        .profile-pic { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #555; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        /* المنشورات */
+        .post { border-bottom: 8px solid var(--card); background: var(--bg); }
+        .post-media { width: 100%; max-height: 500px; object-fit: contain; background: #000; display: block; }
+        .poll-option { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-top: 10px; border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; }
+        .poll-bar { position: absolute; left: 0; top: 0; height: 100%; background: rgba(46, 204, 113, 0.2); width: 0%; transition: 1s; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--bg); border-top: 1px solid var(--border); display: flex; justify-content: center; height: 60px; align-items: center; z-index: 1000; }
-        .create-btn { width: 45px; height: 45px; border-radius: 50%; background: white; color: black; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+        /* المودال وزر X */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-card { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; border: 1px solid var(--primary); position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-x { position: absolute; top: 10px; left: 15px; font-size: 35px; color: var(--red); cursor: pointer; font-weight: bold; z-index: 100; }
 
-        /* Modal */
-        #modal { position: fixed; bottom: 0; width: 100%; background: var(--card); border-radius: 20px 20px 0 0; padding: 25px; z-index: 3000; transform: translateY(100%); }
-        #modal.active { transform: translateY(0); }
+        /* خيارات الرفع الملونة */
+        .upload-choice { flex: 1; background: #1a1a1a; border: 1px solid var(--border); padding: 20px; border-radius: 15px; cursor: pointer; text-align: center; font-size: 14px; }
+        .upload-choice:hover { border-color: var(--primary); transform: translateY(-3px); }
+
+        /* الشريط السفلي */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
+        .main-plus { background: var(--primary); width: 65px; height: 65px; border-radius: 50%; border: none; font-size: 35px; color: #000; cursor: pointer; box-shadow: 0 0 20px rgba(46, 204, 113, 0.4); }
+
+        /* التنسيقات العامة */
+        .owner-txt { color: var(--gold) !important; font-weight: bold; text-shadow: 0 0 10px rgba(241,196,15,0.5); }
+        .hidden { display: none !important; }
+        .avatar-circle { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+        textarea { resize: none; }
     </style>
 </head>
-<body>
+<body id="bodyTag">
 
-    <div class="header">
-        <div class="logo">Mando X</div>
-    </div>
-
-    <div id="loginPage">
-        <h2 id="logTitle">تسجيل الدخول</h2>
-        <div class="avatar-box" onclick="document.getElementById('avatarInp').click()">
-            <span id="pIcon">+</span>
-            <img id="avatarImg" class="hidden">
+    <div id="authPage">
+        <div class="auth-card">
+            <h1 style="color:var(--primary); margin-bottom:10px;">Mando X</h1>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Redmi A3X Optimized</p>
+            <input type="text" id="uName" placeholder="اسم المستخدم">
+            <input type="password" id="uPass" placeholder="كلمة المرور">
+            <button onclick="login()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;">دخول</button>
+            <button onclick="googleAuth()" style="width:100%; padding:12px; background:#fff; color:#000; border:none; border-radius:12px; margin-top:10px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18"> استرداد عبر Google
+            </button>
         </div>
-        <input type="file" id="avatarInp" class="hidden" accept="image/*" onchange="previewAvatar()">
-        <input type="text" id="user" placeholder="اسم المستخدم أو البريد">
-        <input type="password" placeholder="كلمة المرور">
-        
-        <button class="main-btn" onclick="startApp()">تسجيل الدخول</button>
-        
-        <a href="#" class="recovery-link" onclick="alert('سيتم إرسال رمز الاسترداد إلى بريدك المسجل')">نسيت كلمة المرور؟ استرداد الحساب</a>
-
-        <div class="divider">أو المتابعة باستخدام</div>
-
-        <button class="social-btn google-btn" onclick="socialLogin('Google')">
-             G المتابعة باستخدام Google
-        </button>
-        <button class="social-btn fb-btn" onclick="socialLogin('Facebook')">
-             f المتابعة باستخدام Facebook
-        </button>
     </div>
 
-    <div id="feedPage" class="hidden">
-        <div id="postsList"></div>
+    <div id="sideMenu" class="side-menu">
+        <h3 data-tr="settings">الإعدادات</h3>
+        <hr style="margin:20px 0; border:0.5px solid var(--border);">
+        <div style="text-align:center; margin-bottom:25px;">
+            <div style="position:relative; display:inline-block;">
+                <img id="sideAva" class="avatar-circle" style="width:110px; height:110px; border-width:3px;">
+                <button onclick="document.getElementById('changePicInp').click()" style="position:absolute; bottom:0; right:0; background:var(--primary); border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;">📷</button>
+            </div>
+            <p id="sideName" style="margin-top:15px; font-size:20px; font-weight:bold;"></p>
+            <input type="file" id="changePicInp" class="hidden" accept="image/*" onchange="updateProfilePic(this)">
+        </div>
+        <div style="margin-bottom:15px;">
+            <label data-tr="langLabel" style="font-size:13px; color:#888;">اللغة:</label>
+            <select onchange="changeLanguage(this.value)" style="width:100%; padding:12px; margin-top:5px; border-radius:10px; background:#000; color:#fff; border:1px solid #444;">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <button onclick="toggleDarkMode()" style="width:100%; padding:14px; background:#333; color:#fff; border:none; border-radius:10px; margin-top:10px; cursor:pointer;" data-tr="darkBtn">الوضع الليلي 🌗</button>
+        <button onclick="logout()" style="width:100%; padding:14px; background:var(--red); color:#fff; border:none; border-radius:10px; margin-top:10px; cursor:pointer;" data-tr="logout">تسجيل الخروج 🚪</button>
+        <button onclick="toggleMenu()" style="width:100%; padding:12px; background:transparent; color:#fff; border:1px solid #444; border-radius:10px; margin-top:15px; cursor:pointer;">إغلاق</button>
     </div>
 
-    <div class="bottom-nav hidden" id="nav">
-        <div class="create-btn" onclick="openModal()">+</div>
+    <div id="mainApp" class="hidden">
+        <div class="header">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="logo" style="letter-spacing:1px;">MANDO <span style="color:#fff;">X</span></div>
+                <img id="headAva" class="avatar-circle" onclick="toggleMenu()" style="cursor:pointer;">
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="setFilter('all', this)" data-tr="all">الكل</div>
+                <div class="tab" onclick="setFilter('poll', this)" data-tr="polls">تصويتات</div>
+                <div class="tab" onclick="setFilter('video', this)" data-tr="vids">فيديوهات</div>
+                <div class="tab" onclick="setFilter('music', this)" data-tr="songs">أغاني</div>
+                <div class="tab" onclick="setFilter('image', this)" data-tr="imgs">صور</div>
+                <div class="tab" onclick="setFilter('text', this)" data-tr="posts">منشورات</div>
+            </div>
+        </div>
+        <div id="feed"></div>
+        <div class="nav-bar">
+            <button onclick="openModal('text')" style="background:none; border:none; font-size:26px; cursor:pointer;">📝</button>
+            <button class="main-plus" onclick="openChoiceModal()">+</button>
+            <button onclick="openModal('poll')" style="background:none; border:none; font-size:26px; cursor:pointer;">📊</button>
+        </div>
     </div>
 
-    <div id="modal">
-        <h3>منشور جديد</h3>
-        <input type="file" id="postFile" class="hidden" accept="image/*" onchange="postPreview()">
-        <button onclick="document.getElementById('postFile').click()" class="main-btn" style="background:#333">+ اختر صورة</button>
-        <img id="pImg" style="width:100%; margin:10px 0; display:none; border-radius:10px;">
-        <input type="text" id="postDesc" placeholder="ماذا يدور في ذهنك؟">
-        <button class="main-btn" onclick="publish()">نشر الآن</button>
-        <button onclick="closeModal()" class="social-btn" style="margin-top:10px; border:none;">إلغاء</button>
+    <div id="pModal" class="modal">
+        <div class="modal-card">
+            <span class="close-x" onclick="closeModal()">&times;</span>
+            <div id="modalInner"></div>
+        </div>
     </div>
 
     <script>
-        let me = { name: '', avatar: '' };
+        const OWNER_NAME = "Mando_Owner";
+        let session = JSON.parse(localStorage.getItem('mando_session'));
+        let posts = JSON.parse(localStorage.getItem('mando_posts')) || [];
+        let currentFilter = 'all';
+        let tempMedia = null;
 
-        function previewAvatar() {
-            const file = document.getElementById('avatarInp').files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById('avatarImg').src = e.target.result;
-                document.getElementById('avatarImg').classList.remove('hidden');
-                document.getElementById('pIcon').classList.add('hidden');
-                me.avatar = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        const trans = {
+            ar: { settings:"الإعدادات", changePic:"تغيير الصورة", langLabel:"اللغة:", darkBtn:"الوضع الليلي", logout:"تسجيل الخروج", all:"الكل", polls:"تصويتات", vids:"فيديوهات", songs:"أغاني", imgs:"صور", posts:"منشورات" },
+            en: { settings:"Settings", changePic:"Change Avatar", langLabel:"Language:", darkBtn:"Dark Mode", logout:"Logout", all:"All", polls:"Polls", vids:"Videos", songs:"Songs", imgs:"Photos", posts:"Posts" }
+        };
+
+        window.onload = () => {
+            const u = localStorage.getItem('last_u'); const p = localStorage.getItem('last_p');
+            if(u) document.getElementById('uName').value = u;
+            if(p) document.getElementById('uPass').value = p;
+            if(session) start();
+        };
+
+        function login() {
+            const n = document.getElementById('uName').value.trim();
+            const p = document.getElementById('uPass').value.trim();
+            if(!n) return;
+            session = { name: n, isOwner: (n === OWNER_NAME), avatar: "https://via.placeholder.com/100/2ecc71/fff?text="+n[0] };
+            localStorage.setItem('mando_session', JSON.stringify(session));
+            localStorage.setItem('last_u', n); localStorage.setItem('last_p', p);
+            start();
         }
 
-        function startApp() {
-            const name = document.getElementById('user').value;
-            if(name.length < 2) return alert("يرجى إدخال اسم المستخدم");
-            me.name = name;
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('feedPage').classList.remove('hidden');
-            document.getElementById('nav').classList.remove('hidden');
+        function start() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            updateUI(); render();
         }
 
-        function socialLogin(platform) {
-            alert("جارٍ الاتصال بـ " + platform + "... (هذه ميزة تجريبية في واجهة Mando X)");
-            document.getElementById('user').value = "User_" + platform;
-            startApp();
+        function updateUI() {
+            document.getElementById('headAva').src = session.avatar;
+            document.getElementById('sideAva').src = session.avatar;
+            document.getElementById('sideName').innerText = session.name;
+            if(session.isOwner) document.getElementById('sideName').classList.add("owner-txt");
         }
 
-        function openModal() { document.getElementById('modal').classList.add('active'); }
-        function closeModal() { document.getElementById('modal').classList.remove('active'); }
-
-        function postPreview() {
-            const file = document.getElementById('postFile').files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById('pImg').src = e.target.result;
-                document.getElementById('pImg').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function publish() {
-            const desc = document.getElementById('postDesc').value;
-            const img = document.getElementById('pImg').src;
-            if(!img || !desc) return alert("أكمل بيانات المنشور");
-
-            const avatarHTML = me.avatar ? `<img src="${me.avatar}">` : `<div style="width:100%;height:100%;background:#555;display:flex;align-items:center;justify-content:center;">${me.name[0].toUpperCase()}</div>`;
-            
-            const postHTML = `<div class="post">
-                <img src="${img}">
-                <div class="post-info">
-                    <div class="profile-pic">${avatarHTML}</div>
-                    <div><b>${me.name}</b><p>${desc}</p></div>
+        function openChoiceModal() {
+            const inner = document.getElementById('modalInner');
+            inner.innerHTML = `
+                <h3 style="text-align:center; margin-bottom:20px;">إضافة محتوى جديد</h3>
+                <div style="display:flex; gap:10px;">
+                    <div class="upload-choice" onclick="triggerInput('vInp')">🎥<br>فيديو</div>
+                    <div class="upload-choice" onclick="triggerInput('iInp')">🖼️<br>صورة</div>
+                    <div class="upload-choice" onclick="triggerInput('mInp')">🎵<br>أغنية</div>
                 </div>
-            </div>`;
-            document.getElementById('postsList').innerHTML = postHTML + document.getElementById('postsList').innerHTML;
-            closeModal();
-            document.getElementById('pImg').style.display = 'none';
-            document.getElementById('postDesc').value = '';
+                <input type="file" id="vInp" class="hidden" accept="video/*" onchange="handleFile(this, 'video', 'video')">
+                <input type="file" id="iInp" class="hidden" accept="image/*" onchange="handleFile(this, 'image', 'image')">
+                <input type="file" id="mInp" class="hidden" accept="audio/*" onchange="handleFile(this, 'music', 'image')">
+            `;
+            document.getElementById('pModal').style.display = 'flex';
         }
-    </script>
-</body>
-</html>
+
+        function triggerInput(id) { document.getElementById(id).click(); }
+
+        function handleFile(input, cat, type) {
+            const file = input.files[0]; if(!file) return;
+            const r = new FileReader();
+            r.onload = (e) => {
+                document.getElementById('modalInner').innerHTML = `
+                    <h3>نشر ${cat === 'video' ? 'فيديو' : cat === 'music' ? 'أغنية' : 'صورة'}</h3>
+                    <div style="background:#000; padding:10px; border-radius:10px; margin-top:10px; border:1px solid #333;">
+                        <textarea id="desc" placeholder="اكتب وصفاً..." style="width:100%; height:80px; background:transparent; border:none; color:#fff; outline:none;"></textarea>
+                    </div>
+                    <button class="main-plus" style="width:100%; border-radius:10px; height:50px; margin-top:15px; box-shadow:none; font-size:18px;" onclick="saveP({type:'${type}', category:'${cat}', media:'${e.target.result}', text:document.getElementById('desc').value})">نشر الآن</button>
+                `;
+            };
+            r.readAsDataURL(file);
+        }
+
+        function openModal(type) {
+            tempMedia = null; const inner = document.getElementById('modalInner');
+            if(type === 'text') {
+                inner.innerHTML = `<h3>منشور جديد</h3><div style="background:#1a1a1a; border:1px solid #333; border-radius:15px; padding:12px; margin-top:15px; display:flex; align-items:center;"><textarea id="t" placeholder="ماذا يدور في ذهنك؟" style="flex:1; background:transparent; border:none; color:#fff; outline:none;"></textarea><label style="font-size:26px; cursor:pointer;">🖼️<input type="file" class="hidden" accept="image/*" onchange="preI(this)"></label></div><img id="pv" style="width:100%; display:none; border-radius:10px; margin-top:10px; border:1px solid var(--primary);"><button class="main-plus" style="width:100%; border-radius:10px; height:50px; margin-top:15px; box-shadow:none;" onclick="saveP({type:tempMedia?'image':'text', category:'text', text:document.getElementById('t').value, media:tempMedia})">نشر</button>`;
+            } else {
+                inner.innerHTML = `<h3>تصويت 📊</h3><div style="background:#1a1a1a; border:1px solid #333; border-radius:15px; padding:12px; margin-top:15px; display:flex; align-items:center;"><input id="q" placeholder="السؤال..." style="flex:1; background:transparent; border:none; color:#fff; outline:none;"><label style="font-size:26px; cursor:pointer;">🖼️<input type="file" class="hidden" accept="image/*" onchange="preI(this)"></label></div><img id="pv" style="width:100%; display:none; border-radius:10px; margin-top:10px; border:1px solid var(--primary);"><div id="os"><input class="p-o" placeholder="خيار 1" style="width:100%; padding:12px; margin-top:10px; border-radius:10px; border:1px solid #444; background:#000; color:#fff;"><input class="p-o" placeholder="خيار 2" oninput="addO(this)" style="width:100%; padding:12px; margin-top:10px; border-radius:10px; border:1px solid #444; background:#000; color:#fff;"></div><button class="main-plus" style="width:100%; border-radius:10px; height:50px; margin-top:15px; box-shadow:none;" onclick="savePoll()">نشر التصويت</button>`;
+            }
+            document.getElementById('pModal').style.display = 'flex';
+        }
+
+        function preI(input) { const r = new FileReader(); r.onload = (e) => { tempMedia = e.target.result; const i = document.getElementById('pv'); i.src = tempMedia; i.style.display = 'block'; }; r.readAsDataURL(input.files[0]); }
+        function addO(el) { const a = document.getElementById('os'); const inps = a.querySelectorAll('.p-o'); if(el === inps[inps.length-1] && inps.length < 6) { const n = document.createElement('input'); n.className = 'p-o'; n.placeholder = "خيار " + (inps.length+1); n.oninput = function() { addO(this); }; n.style = "width:100%; padding:12px; margin-top:10px; border-radius:10px; border:1px solid #444; background:#000; color:#fff;"; a.appendChild(n); } }
+        function saveP(data) { if(!data.text.trim() && !data.media) return; posts.unshift({ id: Date.now(), user: session.name, isOwner: session.isOwner, userPic: session.avatar, ...data, vRec: {} }); store(); }
+        function savePoll() { const q = document.getElementById('q').value; const os = []; document.querySelectorAll('.p-o').forEach(i => { if(i.value.trim()) os.push({text: i.value, votes: 0}); }); if(!q.trim() && !tempMedia) return; saveP({ type: 'poll', category: 'poll', text: q, media: tempMedia, pollOpts: os }); }
+        
+        function render() {
+            const f = document.getElementById('feed'); f.innerHTML = '';
+            const filt = currentFilter === 'all' ? posts : posts.filter(p => p.category === currentFilter);
+            filt.forEach(p => {
+                let m = p.media ? (p.type==='video'?`<video src="${p.media}" class="post-media" controls></video>`:`<img src="${p.media}" class="post-media">`) : '';
+                let pl = p.type==='poll' ? `<div style="padding:10px;">` + p.pollOpts.map((o,i)=>`<div class="poll-option" onclick="vote(${p.id},${i})"><div class="poll-bar" style="width:${calc(p,i)}%"></div><span style="position:relative; z-index:2;">${o.text} (${calc(p,i)}%)</span></div>`).join('') + `</div>` : '';
+                f.innerHTML += `<div class="post">
+                    <div style="padding:12px; display:flex; align-items:center; gap:12px;">
+                        <img src="${p.userPic}" class="avatar-circle" style="width:38px; height:38px;">
+                        <span class="${p.isOwner?'owner-txt':''}" style="font-size:15px;">${p.user}</span>
+                    </div>
+                    ${m}
+                    <div style="padding:15px;">
+                        <p style="white-space:pre-wrap; font-size:15px; line-height:1.5;">${p.text}</p>
+                        ${pl}
+                        ${(session.isOwner || p.user===session.name)?`<button onclick="del(${p.id})" style="color:var(--red); border:none; background:none; font-size:12px; margin-top:15px; cursor:pointer;">حذف المنشور</button>`:''}
+                    </div>
+                </div>`;
+            });
+        }
+
+        function vote(id, i) { const p=posts.find(x=>x.id===id); if(p.vRec[session.name])return; p.pollOpts[i].votes++; p.vRec[session.name]=true; store(); }
+        function calc(p, i) { const t=p.pollOpts.reduce((s,o)=>s+o.votes,0); return t===0?0:Math.round((p.pollOpts[i].votes/t)*100); }
+        function store() { localStorage.setItem
